@@ -28,7 +28,7 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_train_file(file, word2id):   
+    def load_train_file(file, word2id):
         read_file=open(file, 'r')
         data=[]
         Y=[]
@@ -39,11 +39,11 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
         line_control=0
         for line in read_file:
             tokens=line.strip().split('\t')  # question, answer, label
-            Y.append(int(tokens[0])) 
+            Y.append(int(tokens[0]))
             #question
             for i in [1,2]:
                 sent=[]
-                words=tokens[i].strip().lower().split()  
+                words=tokens[i].strip().lower().split()
                 #true_lengths.append(len(words))
                 length=0
                 for word in words:
@@ -62,7 +62,7 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
                 right=maxlength-left-length
                 leftPad.append(left)
                 rightPad.append(right)
- 
+
                 sent=[0]*left+sent+[0]*right
                 data.append(sent)
             line_control+=1
@@ -94,7 +94,7 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
             #Y.append(int(tokens[0]))
             for i in [1,2]:
                 sent=[]
-                words=tokens[i].strip().lower().split()  
+                words=tokens[i].strip().lower().split()
                 #true_lengths.append(len(words))
                 length=0
                 for word in words:
@@ -112,7 +112,7 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
                 left=(maxlength-length)/2
                 right=maxlength-left-length
                 leftPad.append(left)
-                rightPad.append(right) 
+                rightPad.append(right)
                 sent=[0]*left+sent+[0]*right
                 data.append(sent)
             #line_control+=1
@@ -126,22 +126,22 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
         min=numpy.min(arr)
         normalized_lengths=(arr-min)*1.0/(max-min)
         '''
-        #return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad) 
-        return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad) 
+        #return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad)
+        return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad)
 
     indices_train, trainY, trainLengths, trainLeftPad, trainRightPad=load_train_file(trainFile, vocab)
     print 'train file loaded over, total pairs: ', len(trainLengths)/2
     indices_test, testY, testLengths, testLeftPad, testRightPad=load_test_file(testFile, vocab)
     print 'test file loaded over, total pairs: ', len(testLengths)/2
-    
+
     #now, we need normaliza sentence length in the whole dataset (training and test)
     concate_matrix=numpy.concatenate((trainLengths, testLengths), axis=0)
     max=numpy.max(concate_matrix)
-    min=numpy.min(concate_matrix)    
+    min=numpy.min(concate_matrix)
     normalized_trainLengths=(trainLengths-min)*1.0/(max-min)
     normalized_testLengths=(testLengths-min)*1.0/(max-min)
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
@@ -154,18 +154,18 @@ def load_huizi_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength): #
     #indices_test=shared_dataset(indices_test)
     train_set_Lengths=shared_dataset(trainLengths)
     test_set_Lengths=shared_dataset(testLengths)
-    
-    normalized_train_length=theano.shared(numpy.asarray(normalized_trainLengths, dtype=theano.config.floatX),  borrow=True)                           
-    normalized_test_length = theano.shared(numpy.asarray(normalized_testLengths, dtype=theano.config.floatX),  borrow=True)       
-    
+
+    normalized_train_length=theano.shared(numpy.asarray(normalized_trainLengths, dtype=theano.config.floatX),  borrow=True)
+    normalized_test_length = theano.shared(numpy.asarray(normalized_testLengths, dtype=theano.config.floatX),  borrow=True)
+
     train_left_pad=shared_dataset(trainLeftPad)
     train_right_pad=shared_dataset(trainRightPad)
     test_left_pad=shared_dataset(testLeftPad)
     test_right_pad=shared_dataset(testRightPad)
-                                
-    train_set_y=shared_dataset(trainY)                             
+
+    train_set_y=shared_dataset(trainY)
     test_set_y = shared_dataset(testY)
-    
+
 
     rval = [(indices_train,train_set_y, train_set_Lengths, normalized_train_length, train_left_pad, train_right_pad), (indices_test, test_set_y, test_set_Lengths, normalized_test_length, test_left_pad, test_right_pad)]
     return rval, word_ind-1
@@ -181,7 +181,7 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
     read_vocab.close()
     sentlength_limit=1040
     #load train file
-    def load_train_file(file, word2id):   
+    def load_train_file(file, word2id):
         read_file=open(file, 'r')
         data=[]
         Lengths=[]
@@ -193,7 +193,7 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
             #question
             for i in range(1,3):
                 sent=[]
-                words=tokens[i].strip().split()  
+                words=tokens[i].strip().split()
                 length=len(words)
                 if length>sentlength_limit:
                     words=words[:sentlength_limit]
@@ -205,7 +205,7 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
                 rightPad.append(right)
                 if left<0 or right<0:
                     print 'Too long sentence:\n'+tokens[i]
-                    exit(0)   
+                    exit(0)
                 sent+=[0]*left
                 for word in words:
                     sent.append(word2id.get(word))
@@ -232,7 +232,7 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
             Y.append(int(tokens[0])) # make the label starts from 0 to 4
             for i in range(1,3):
                 sent=[]
-                words=tokens[i].strip().split() 
+                words=tokens[i].strip().split()
                 length=len(words)
                 if length>sentlength_limit:
                     words=words[:sentlength_limit]
@@ -244,7 +244,7 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
                 rightPad.append(right)
                 if left<0 or right<0:
                     print 'Too long sentence:\n'+line
-                    exit(0)  
+                    exit(0)
                 sent+=[0]*left
                 for word in words:
                     sent.append(word2id.get(word))
@@ -254,15 +254,15 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
             #if line_control==1000:
             #    break
         read_file.close()
-        return numpy.array(data),Y, numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad) 
+        return numpy.array(data),Y, numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad)
 
     indices_train, trainLengths, trainLeftPad, trainRightPad=load_train_file(trainFile, vocab)
     print 'train file loaded over, total pairs: ', len(trainLengths)/2
     indices_dev, devY, devLengths, devLeftPad, devRightPad=load_dev_file(devFile, vocab)
     print 'dev file loaded over, total pairs: ', len(devLengths)/2
-   
 
-    
+
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
@@ -271,16 +271,16 @@ def load_ibm_corpus(vocabFile, trainFile, devFile, maxlength):
         #return shared_y
 
 
-    train_set_Lengths=shared_dataset(trainLengths)                             
+    train_set_Lengths=shared_dataset(trainLengths)
     valid_set_Lengths = shared_dataset(devLengths)
-    
+
     train_left_pad=shared_dataset(trainLeftPad)
     train_right_pad=shared_dataset(trainRightPad)
     dev_left_pad=shared_dataset(devLeftPad)
     dev_right_pad=shared_dataset(devRightPad)
-                                
+
     #valid_set_y = shared_dataset(devY)
-    
+
 
     rval = [(indices_train,train_set_Lengths, train_left_pad, train_right_pad), (indices_dev, devY, valid_set_Lengths, dev_left_pad, dev_right_pad)]
     return rval, word_ind-1
@@ -292,11 +292,11 @@ def load_word2vec_to_init(rand_values, file):
     for line in readFile:
         tokens=line.strip().split()
         rand_values[line_count]=numpy.array(map(float, tokens[1:]))
-        line_count+=1                                            
+        line_count+=1
     readFile.close()
     print 'initialization over...'
     return rand_values
-    
+
 def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=60
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
@@ -308,7 +308,7 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_train_file(file, word2id):   
+    def load_train_file(file, word2id):
         read_file=open(file, 'r')
         data=[]
         Y=[]
@@ -319,11 +319,11 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
         for line in read_file:
             tokens=line.strip().split('\t')  # label, sent1, sent2
             Y.append(int(tokens[0])) #repeat
-            Y.append(int(tokens[0])) 
+            Y.append(int(tokens[0]))
             #question
             for i in [1,2,2,1]: #shuffle the example
                 sent=[]
-                words=tokens[i].strip().lower().split()  
+                words=tokens[i].strip().lower().split()
                 length=0
                 for word in words:
                     id=word2id.get(word)
@@ -338,7 +338,7 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
                 rightPad.append(right)
                 if left<0 or right<0:
                     print 'Too long sentence:\n'+tokens[i]
-                    exit(0)   
+                    exit(0)
                 sent=[0]*left+sent+[0]*right
                 data.append(sent)
             #line_control+=1
@@ -367,7 +367,7 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
             #Y.append(int(tokens[0]))
             for i in [1,2]:
                 sent=[]
-                words=tokens[i].strip().lower().split()  
+                words=tokens[i].strip().lower().split()
                 length=0
                 for word in words:
                     id=word2id.get(word)
@@ -382,7 +382,7 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
                 rightPad.append(right)
                 if left<0 or right<0:
                     print 'Too long sentence:\n'+tokens[i]
-                    exit(0)   
+                    exit(0)
                 sent=[0]*left+sent+[0]*right
                 data.append(sent)
             #line_control+=1
@@ -396,22 +396,22 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
         min=numpy.min(arr)
         normalized_lengths=(arr-min)*1.0/(max-min)
         '''
-        #return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad) 
-        return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad) 
+        #return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad)
+        return numpy.array(data),numpy.array(Y), numpy.array(Lengths), numpy.array(leftPad),numpy.array(rightPad)
 
     indices_train, trainY, trainLengths, trainLeftPad, trainRightPad=load_train_file(trainFile, vocab)
     print 'train file loaded over, total pairs: ', len(trainLengths)/2
     indices_test, testY, testLengths, testLeftPad, testRightPad=load_test_file(testFile, vocab)
     print 'test file loaded over, total pairs: ', len(testLengths)/2
-    
+
     #now, we need normaliza sentence length in the whole dataset (training and test)
     concate_matrix=numpy.concatenate((trainLengths, testLengths), axis=0)
     max=numpy.max(concate_matrix)
-    min=numpy.min(concate_matrix)    
+    min=numpy.min(concate_matrix)
     normalized_trainLengths=(trainLengths-min)*1.0/(max-min)
     normalized_testLengths=(testLengths-min)*1.0/(max-min)
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
@@ -424,18 +424,18 @@ def load_msr_corpus(vocabFile, trainFile, testFile, maxlength): #maxSentLength=6
     #indices_test=shared_dataset(indices_test)
     train_set_Lengths=shared_dataset(trainLengths)
     test_set_Lengths=shared_dataset(testLengths)
-    
-    normalized_train_length=theano.shared(numpy.asarray(normalized_trainLengths, dtype=theano.config.floatX),  borrow=True)                           
-    normalized_test_length = theano.shared(numpy.asarray(normalized_testLengths, dtype=theano.config.floatX),  borrow=True)       
-    
+
+    normalized_train_length=theano.shared(numpy.asarray(normalized_trainLengths, dtype=theano.config.floatX),  borrow=True)
+    normalized_test_length = theano.shared(numpy.asarray(normalized_testLengths, dtype=theano.config.floatX),  borrow=True)
+
     train_left_pad=shared_dataset(trainLeftPad)
     train_right_pad=shared_dataset(trainRightPad)
     test_left_pad=shared_dataset(testLeftPad)
     test_right_pad=shared_dataset(testRightPad)
-                                
-    train_set_y=shared_dataset(trainY)                             
+
+    train_set_y=shared_dataset(trainY)
     test_set_y = shared_dataset(testY)
-    
+
 
     rval = [(indices_train,train_set_y, train_set_Lengths, normalized_train_length, train_left_pad, train_right_pad), (indices_test, test_set_y, test_set_Lengths, normalized_test_length, test_left_pad, test_right_pad)]
     return rval, word_ind-1
@@ -454,10 +454,10 @@ def load_mts(train_file, test_file):
         tokens=map(float, line.strip().split())
         test_values.append(tokens)
     read_test.close()
-    
+
     train_values=theano.shared(numpy.asarray(train_values, dtype=theano.config.floatX), borrow=True)
     test_values=theano.shared(numpy.asarray(test_values, dtype=theano.config.floatX), borrow=True)
-    
+
     return train_values, test_values
 
 def load_mts_wikiQA(train_file, test_file):
@@ -473,10 +473,10 @@ def load_mts_wikiQA(train_file, test_file):
         tokens=map(float, line.strip().split())
         test_values.append(tokens)
     read_test.close()
-    
+
     train_values=theano.shared(numpy.asarray(train_values, dtype=theano.config.floatX), borrow=True)
     test_values=theano.shared(numpy.asarray(test_values, dtype=theano.config.floatX), borrow=True)
-    
+
     return train_values, test_values
 
 def load_extra_features(train_file, test_file):
@@ -492,10 +492,10 @@ def load_extra_features(train_file, test_file):
         tokens=map(float, line.strip().split())
         test_values.append(tokens)
     read_test.close()
-    
+
     train_values=theano.shared(numpy.asarray(train_values, dtype=theano.config.floatX), borrow=True)
     test_values=theano.shared(numpy.asarray(test_values, dtype=theano.config.floatX), borrow=True)
-    
+
     return train_values, test_values
 def load_wmf_wikiQA(train_file, test_file):
     read_train=open(train_file, 'r')
@@ -510,12 +510,19 @@ def load_wmf_wikiQA(train_file, test_file):
         tokens=map(float, line.strip().split())
         test_values.append(tokens)
     read_test.close()
-    
+
     train_values=theano.shared(numpy.asarray(train_values, dtype=theano.config.floatX), borrow=True)
     test_values=theano.shared(numpy.asarray(test_values, dtype=theano.config.floatX), borrow=True)
-    
+
     return train_values, test_values
-def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, max_doc_length): #maxSentLength=45
+def load_MCTest_corpus(
+        vocabFile,
+        trainFile,
+        testFile,
+        max_truncate,
+        maxlength,
+        max_doc_length
+): #maxSentLength=45
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
     vocab={}
@@ -526,7 +533,7 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_file(infile, word2id):   
+    def load_file(infile, word2id):
         read_file=open(infile, 'r')
         data_D=[] #docs, will be a order-3 tensor
         data_Q=[] #question
@@ -544,21 +551,21 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
         rightPad_D=[]
         rightPad_D_s=[]
         rightPad_Q=[]
-        rightPad_A=[]                                
+        rightPad_A=[]
 
         line_control=0
         for line in read_file:
             tokens=line.strip().split('\t')  # question, answer, label
             Y.append(int(tokens[0]))
-            Label.append(int(tokens[1])) 
+            Label.append(int(tokens[1]))
 
             #doc
             data_D_s=[]# will be a matrix
             length_D_s=[]#a vector
             left_D_s=[] # vector
             right_D_s=[] #vector
-            
-            doc_len=len(tokens)-4 # remove two labels, one question, one answer           
+
+            doc_len=len(tokens)-4 # remove two labels, one question, one answer
             left_D=(max_doc_length-doc_len)/2
             for i in range(left_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -571,7 +578,7 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
 
             for s in tokens[2:-2]: #load valid sentences
                 sent=[]
-                words=s.strip().split()  
+                words=s.strip().split()
                 for word in words:
                     id=word2id.get(word)
                     if id is not None:
@@ -585,7 +592,7 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
                 length_D_s.append(length)
                 left_D_s.append(left)
                 right_D_s.append(right)
-            
+
             right_D=max_doc_length-left_D-doc_len
             for i in range(right_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -593,12 +600,12 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
                 data_D_s.append(sent)
                 length_D_s.append(0)
                 left_D_s.append(maxlength/2)
-                right_D_s.append(maxlength-maxlength/2)            
+                right_D_s.append(maxlength-maxlength/2)
 
             data_D.append(data_D_s) # add one slice
             Length_D.append(doc_len)
             leftPad_D.append(left_D)
-            rightPad_D.append(right_D)                        
+            rightPad_D.append(right_D)
             #store above four depository
             Length_D_s.append(length_D_s)
             leftPad_D_s.append(left_D_s)
@@ -607,7 +614,7 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
             words=tokens[-2].strip().split()
             len_q=len(words)
             left=(maxlength-len_q)/2
-            right=maxlength-left-len_q          
+            right=maxlength-left-len_q
             sent=[]
             for word in words:
                 id=word2id.get(word)
@@ -617,29 +624,29 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
             data_Q.append(sent)
             Length_Q.append(len_q)
             leftPad_Q.append(left)
-            rightPad_Q.append(right)             
+            rightPad_Q.append(right)
             #A
             words=tokens[-1].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A.append(sent)            
+            data_A.append(sent)
             Length_A.append(len_a)
             leftPad_A.append(left)
-            rightPad_A.append(right)             
+            rightPad_A.append(right)
             line_control+=1
             #if line_control==50:
             #    break
         read_file.close()
- 
-        
-        results=[numpy.array(data_D), numpy.array(data_Q), numpy.array(data_A), numpy.array(Y), numpy.array(Label), 
+
+
+        results=[numpy.array(data_D), numpy.array(data_Q), numpy.array(data_A), numpy.array(Y), numpy.array(Label),
                  numpy.array(Length_D),numpy.array(Length_D_s), numpy.array(Length_Q), numpy.array(Length_A),
                 numpy.array(leftPad_D),numpy.array(leftPad_D_s), numpy.array(leftPad_Q), numpy.array(leftPad_A),
                 numpy.array(rightPad_D),numpy.array(rightPad_D_s), numpy.array(rightPad_Q), numpy.array(rightPad_A)]
@@ -653,20 +660,27 @@ def load_MCTest_corpus(vocabFile, trainFile, testFile, max_truncate,maxlength, m
     print 'test file loaded over'
 
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
                                  borrow=borrow)
-        return T.cast(shared_y, 'int64')  
+        return T.cast(shared_y, 'int64')
         #return shared_y
-    
+
     train_list=[shared_dataset(matt) for matt in train_data]
-    test_list=[shared_dataset(matt) for matt in test_data]       
+    test_list=[shared_dataset(matt) for matt in test_data]
 
     return train_list, train_size, test_list, test_size, word_ind-1
 
-def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxlength, max_doc_length): #maxSentLength=45
+def load_MCTest_corpus_DQAAAA(
+        vocabFile,
+        trainFile,
+        testFile,
+        max_truncate,
+        maxlength,
+        max_doc_length
+): #maxSentLength=45
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
     vocab={}
@@ -677,7 +691,7 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_file(infile, word2id):   
+    def load_file(infile, word2id):
         read_file=open(infile, 'r')
         data_D=[] #docs, will be a order-3 tensor
         data_Q=[] #question
@@ -704,10 +718,10 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
         rightPad_D=[]
         rightPad_D_s=[]
         rightPad_Q=[]
-        rightPad_A1=[]       
-        rightPad_A2=[]  
-        rightPad_A3=[]  
-        rightPad_A4=[]                           
+        rightPad_A1=[]
+        rightPad_A2=[]
+        rightPad_A3=[]
+        rightPad_A4=[]
 
         line_control=0
         for line in read_file:
@@ -720,8 +734,8 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
             length_D_s=[]#a vector
             left_D_s=[] # vector
             right_D_s=[] #vector
-            
-            doc_len=len(tokens)-6 # remove one label, one question, four answers           
+
+            doc_len=len(tokens)-6 # remove one label, one question, four answers
             left_D=(max_doc_length-doc_len)/2
             for i in range(left_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -734,7 +748,7 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
 
             for s in tokens[1:-5]: #load valid sentences
                 sent=[]
-                words=s.strip().split()  
+                words=s.strip().split()
                 for word in words:
                     id=word2id.get(word)
                     if id is not None:
@@ -748,7 +762,7 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
                 length_D_s.append(length)
                 left_D_s.append(left)
                 right_D_s.append(right)
-            
+
             right_D=max_doc_length-left_D-doc_len
             for i in range(right_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -756,12 +770,12 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
                 data_D_s.append(sent)
                 length_D_s.append(0)
                 left_D_s.append(maxlength/2)
-                right_D_s.append(maxlength-maxlength/2)            
+                right_D_s.append(maxlength-maxlength/2)
 
             data_D.append(data_D_s) # add one slice
             Length_D.append(doc_len)
             leftPad_D.append(left_D)
-            rightPad_D.append(right_D)                        
+            rightPad_D.append(right_D)
             #store above four depository
             Length_D_s.append(length_D_s)
             leftPad_D_s.append(left_D_s)
@@ -770,7 +784,7 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
             words=tokens[-5].strip().split()
             len_q=len(words)
             left=(maxlength-len_q)/2
-            right=maxlength-left-len_q          
+            right=maxlength-left-len_q
             sent=[]
             for word in words:
                 id=word2id.get(word)
@@ -780,74 +794,74 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
             data_Q.append(sent)
             Length_Q.append(len_q)
             leftPad_Q.append(left)
-            rightPad_Q.append(right)             
+            rightPad_Q.append(right)
             #A1
             words=tokens[-4].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A1.append(sent)            
+            data_A1.append(sent)
             Length_A1.append(len_a)
             leftPad_A1.append(left)
-            rightPad_A1.append(right)         
+            rightPad_A1.append(right)
             #A2
             words=tokens[-3].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A2.append(sent)            
+            data_A2.append(sent)
             Length_A2.append(len_a)
             leftPad_A2.append(left)
-            rightPad_A2.append(right)   
+            rightPad_A2.append(right)
             #A1
             words=tokens[-2].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A3.append(sent)            
+            data_A3.append(sent)
             Length_A3.append(len_a)
             leftPad_A3.append(left)
-            rightPad_A3.append(right)   
+            rightPad_A3.append(right)
             #A1
             words=tokens[-1].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A4.append(sent)            
+            data_A4.append(sent)
             Length_A4.append(len_a)
             leftPad_A4.append(left)
-            rightPad_A4.append(right)       
+            rightPad_A4.append(right)
             line_control+=1
             #if line_control==50:
             #    break
         read_file.close()
- 
-        
-        results=[numpy.array(data_D), numpy.array(data_Q), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(data_A4), numpy.array(Label), 
+
+
+        results=[numpy.array(data_D), numpy.array(data_Q), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(data_A4), numpy.array(Label),
                  numpy.array(Length_D),numpy.array(Length_D_s), numpy.array(Length_Q), numpy.array(Length_A1), numpy.array(Length_A2), numpy.array(Length_A3), numpy.array(Length_A4),
                 numpy.array(leftPad_D),numpy.array(leftPad_D_s), numpy.array(leftPad_Q), numpy.array(leftPad_A1), numpy.array(leftPad_A2), numpy.array(leftPad_A3), numpy.array(leftPad_A4),
                 numpy.array(rightPad_D),numpy.array(rightPad_D_s), numpy.array(rightPad_Q), numpy.array(rightPad_A1), numpy.array(rightPad_A2), numpy.array(rightPad_A3), numpy.array(rightPad_A4)]
@@ -861,20 +875,27 @@ def load_MCTest_corpus_DQAAAA(vocabFile, trainFile, testFile, max_truncate,maxle
     print 'test file loaded over, test_size:', test_size
 
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
                                  borrow=borrow)
-        return T.cast(shared_y, 'int64')  
+        return T.cast(shared_y, 'int64')
         #return shared_y
-    
+
     train_list=[shared_dataset(matt) for matt in train_data]
-    test_list=[shared_dataset(matt) for matt in test_data]       
+    test_list=[shared_dataset(matt) for matt in test_data]
 
     return train_list, train_size, test_list, test_size, word_ind-1
 
-def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlength, max_doc_length): #maxSentLength=45
+def load_MCTest_corpus_DSSSS(
+        vocabFile,
+        trainFile,
+        testFile,
+        max_truncate,
+        maxlength,
+        max_doc_length
+): #maxSentLength=45
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
     vocab={}
@@ -885,7 +906,7 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_file(infile, word2id):   
+    def load_file(infile, word2id):
         read_file=open(infile, 'r')
         data_D=[] #docs, will be a order-3 tensor
 #         data_Q=[] #question
@@ -912,10 +933,10 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
         rightPad_D=[]
         rightPad_D_s=[]
 #         rightPad_Q=[]
-        rightPad_A1=[]       
-        rightPad_A2=[]  
-        rightPad_A3=[]  
-        rightPad_A4=[]                           
+        rightPad_A1=[]
+        rightPad_A2=[]
+        rightPad_A3=[]
+        rightPad_A4=[]
 
         line_control=0
         for line in read_file:
@@ -928,8 +949,8 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
             length_D_s=[]#a vector
             left_D_s=[] # vector
             right_D_s=[] #vector
-            
-            doc_len=len(tokens)-5 # remove one label, four statements           
+
+            doc_len=len(tokens)-5 # remove one label, four statements
             left_D=(max_doc_length-doc_len)/2
             for i in range(left_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -942,7 +963,7 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
 
             for s in tokens[1:-4]: #load valid sentences
                 sent=[]
-                words=s.strip().split()  
+                words=s.strip().split()
                 for word in words:
                     id=word2id.get(word)
                     if id is not None:
@@ -956,7 +977,7 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
                 length_D_s.append(length)
                 left_D_s.append(left)
                 right_D_s.append(right)
-            
+
             right_D=max_doc_length-left_D-doc_len
             for i in range(right_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -964,12 +985,12 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
                 data_D_s.append(sent)
                 length_D_s.append(0)
                 left_D_s.append(maxlength/2)
-                right_D_s.append(maxlength-maxlength/2)            
+                right_D_s.append(maxlength-maxlength/2)
 
             data_D.append(data_D_s) # add one slice
             Length_D.append(doc_len)
             leftPad_D.append(left_D)
-            rightPad_D.append(right_D)                        
+            rightPad_D.append(right_D)
             #store above four depository
             Length_D_s.append(length_D_s)
             leftPad_D_s.append(left_D_s)
@@ -978,7 +999,7 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
 #             words=tokens[-5].strip().split()
 #             len_q=len(words)
 #             left=(maxlength-len_q)/2
-#             right=maxlength-left-len_q          
+#             right=maxlength-left-len_q
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
@@ -988,74 +1009,74 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
 #             data_Q.append(sent)
 #             Length_Q.append(len_q)
 #             leftPad_Q.append(left)
-#             rightPad_Q.append(right)             
+#             rightPad_Q.append(right)
             #A1
             words=tokens[-4].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A1.append(sent)            
+            data_A1.append(sent)
             Length_A1.append(len_a)
             leftPad_A1.append(left)
-            rightPad_A1.append(right)         
+            rightPad_A1.append(right)
             #A2
             words=tokens[-3].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A2.append(sent)            
+            data_A2.append(sent)
             Length_A2.append(len_a)
             leftPad_A2.append(left)
-            rightPad_A2.append(right)   
+            rightPad_A2.append(right)
             #A1
             words=tokens[-2].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A3.append(sent)            
+            data_A3.append(sent)
             Length_A3.append(len_a)
             leftPad_A3.append(left)
-            rightPad_A3.append(right)   
+            rightPad_A3.append(right)
             #A1
             words=tokens[-1].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A4.append(sent)            
+            data_A4.append(sent)
             Length_A4.append(len_a)
             leftPad_A4.append(left)
-            rightPad_A4.append(right)       
+            rightPad_A4.append(right)
             line_control+=1
             #if line_control==50:
             #    break
         read_file.close()
- 
-        
-        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(data_A4), numpy.array(Label), 
+
+
+        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(data_A4), numpy.array(Label),
                  numpy.array(Length_D),numpy.array(Length_D_s), numpy.array(Length_A1), numpy.array(Length_A2), numpy.array(Length_A3), numpy.array(Length_A4),
                 numpy.array(leftPad_D),numpy.array(leftPad_D_s), numpy.array(leftPad_A1), numpy.array(leftPad_A2), numpy.array(leftPad_A3), numpy.array(leftPad_A4),
                 numpy.array(rightPad_D),numpy.array(rightPad_D_s), numpy.array(rightPad_A1), numpy.array(rightPad_A2), numpy.array(rightPad_A3), numpy.array(rightPad_A4)]
@@ -1070,21 +1091,28 @@ def load_MCTest_corpus_DSSSS(vocabFile, trainFile, testFile, max_truncate,maxlen
     print 'test file loaded over, test_size:', test_size
 
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
                                  borrow=borrow)
-        return T.cast(shared_y, 'int64')  
+        return T.cast(shared_y, 'int64')
         #return shared_y
-    
+
     train_list=[shared_dataset(matt) for matt in train_data]
 
-    test_list=[shared_dataset(matt) for matt in test_data]       
+    test_list=[shared_dataset(matt) for matt in test_data]
 
     return train_list, train_size, test_list, test_size, word_ind-1
 
-def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlength, max_doc_length): #maxSentLength=45
+def load_MCTest_corpus_DPN(
+        vocabFile,
+        trainFile,
+        testFile,
+        max_truncate,
+        maxlength,
+        max_doc_length
+): #maxSentLength=45
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
     vocab={}
@@ -1095,7 +1123,7 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_file(infile, word2id):   
+    def load_file(infile, word2id):
         read_file=open(infile, 'r')
         data_D=[] #docs, will be a order-3 tensor
 #         data_Q=[] #question
@@ -1122,10 +1150,10 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
         rightPad_D=[]
         rightPad_D_s=[]
 #         rightPad_Q=[]
-        rightPad_A1=[]       
-        rightPad_A2=[]  
-#         rightPad_A3=[]  
-#         rightPad_A4=[]                           
+        rightPad_A1=[]
+        rightPad_A2=[]
+#         rightPad_A3=[]
+#         rightPad_A4=[]
 
         line_control=0
         for line in read_file:
@@ -1138,8 +1166,8 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
             length_D_s=[]#a vector
             left_D_s=[] # vector
             right_D_s=[] #vector
-            
-            doc_len=len(tokens)-3 # remove one label, two statements           
+
+            doc_len=len(tokens)-3 # remove one label, two statements
             left_D=(max_doc_length-doc_len)/2
             for i in range(left_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -1152,7 +1180,7 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
 
             for s in tokens[1:-2]: #load valid sentences
                 sent=[]
-                words=s.strip().split()  
+                words=s.strip().split()
                 for word in words:
                     id=word2id.get(word)
                     if id is not None:
@@ -1166,7 +1194,7 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
                 length_D_s.append(length)
                 left_D_s.append(left)
                 right_D_s.append(right)
-            
+
             right_D=max_doc_length-left_D-doc_len
             for i in range(right_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -1174,12 +1202,12 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
                 data_D_s.append(sent)
                 length_D_s.append(0)
                 left_D_s.append(maxlength/2)
-                right_D_s.append(maxlength-maxlength/2)            
+                right_D_s.append(maxlength-maxlength/2)
 
             data_D.append(data_D_s) # add one slice
             Length_D.append(doc_len)
             leftPad_D.append(left_D)
-            rightPad_D.append(right_D)                        
+            rightPad_D.append(right_D)
             #store above four depository
             Length_D_s.append(length_D_s)
             leftPad_D_s.append(left_D_s)
@@ -1188,7 +1216,7 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
 #             words=tokens[-5].strip().split()
 #             len_q=len(words)
 #             left=(maxlength-len_q)/2
-#             right=maxlength-left-len_q          
+#             right=maxlength-left-len_q
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
@@ -1198,74 +1226,74 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
 #             data_Q.append(sent)
 #             Length_Q.append(len_q)
 #             leftPad_Q.append(left)
-#             rightPad_Q.append(right)             
+#             rightPad_Q.append(right)
             #A1
             words=tokens[-2].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A1.append(sent)            
+            data_A1.append(sent)
             Length_A1.append(len_a)
             leftPad_A1.append(left)
-            rightPad_A1.append(right)         
+            rightPad_A1.append(right)
             #A2
             words=tokens[-1].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A2.append(sent)            
+            data_A2.append(sent)
             Length_A2.append(len_a)
             leftPad_A2.append(left)
-            rightPad_A2.append(right)   
+            rightPad_A2.append(right)
 #             #A1
 #             words=tokens[-2].strip().split()
 #             len_a=len(words)
 #             left=(maxlength-len_a)/2
-#             right=maxlength-left-len_a           
+#             right=maxlength-left-len_a
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
 #                 if id is not None:
 #                     sent.append(id)
 #             sent=[0]*left+sent+[0]*right
-#             data_A3.append(sent)            
+#             data_A3.append(sent)
 #             Length_A3.append(len_a)
 #             leftPad_A3.append(left)
-#             rightPad_A3.append(right)   
+#             rightPad_A3.append(right)
 #             #A1
 #             words=tokens[-1].strip().split()
 #             len_a=len(words)
 #             left=(maxlength-len_a)/2
-#             right=maxlength-left-len_a           
+#             right=maxlength-left-len_a
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
 #                 if id is not None:
 #                     sent.append(id)
 #             sent=[0]*left+sent+[0]*right
-#             data_A4.append(sent)            
+#             data_A4.append(sent)
 #             Length_A4.append(len_a)
 #             leftPad_A4.append(left)
-#             rightPad_A4.append(right)       
+#             rightPad_A4.append(right)
             line_control+=1
             #if line_control==50:
             #    break
         read_file.close()
- 
-        
-        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(Label), 
+
+
+        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(Label),
                  numpy.array(Length_D),numpy.array(Length_D_s), numpy.array(Length_A1), numpy.array(Length_A2),
                 numpy.array(leftPad_D),numpy.array(leftPad_D_s), numpy.array(leftPad_A1), numpy.array(leftPad_A2),
                 numpy.array(rightPad_D),numpy.array(rightPad_D_s), numpy.array(rightPad_A1), numpy.array(rightPad_A2)]
@@ -1280,21 +1308,28 @@ def load_MCTest_corpus_DPN(vocabFile, trainFile, testFile, max_truncate,maxlengt
     print 'test file loaded over, test_size:', test_size
 
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
                                  borrow=borrow)
-        return T.cast(shared_y, 'int64')  
+        return T.cast(shared_y, 'int64')
         #return shared_y
-    
+
     train_list=[shared_dataset(matt) for matt in train_data]
 
-    test_list=[shared_dataset(matt) for matt in test_data]       
+    test_list=[shared_dataset(matt) for matt in test_data]
 
     return train_list, train_size, test_list, test_size, word_ind-1
 
-def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxlength, max_doc_length): #maxSentLength=45
+def load_MCTest_corpus_DPNQ(
+        vocabFile,
+        trainFile,
+        testFile,
+        max_truncate,
+        maxlength,
+        max_doc_length
+): #maxSentLength=45
     #first load word vocab
     read_vocab=open(vocabFile, 'r')
     vocab={}
@@ -1305,7 +1340,7 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
         word_ind+=1
     read_vocab.close()
     #load train file
-    def load_file(infile, word2id):   
+    def load_file(infile, word2id):
         read_file=open(infile, 'r')
         data_D=[] #docs, will be a order-3 tensor
 #         data_Q=[] #question
@@ -1332,10 +1367,10 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
         rightPad_D=[]
         rightPad_D_s=[]
 #         rightPad_Q=[]
-        rightPad_A1=[]       
-        rightPad_A2=[]  
-        rightPad_A3=[]  
-#         rightPad_A4=[]                           
+        rightPad_A1=[]
+        rightPad_A2=[]
+        rightPad_A3=[]
+#         rightPad_A4=[]
 
         line_control=0
         for line in read_file:
@@ -1348,8 +1383,8 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
             length_D_s=[]#a vector
             left_D_s=[] # vector
             right_D_s=[] #vector
-            
-            doc_len=len(tokens)-4 # remove one label, two statements, one question           
+
+            doc_len=len(tokens)-4 # remove one label, two statements, one question
             left_D=(max_doc_length-doc_len)/2
             for i in range(left_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -1362,7 +1397,7 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
 
             for s in tokens[1:-3]: #load valid sentences
                 sent=[]
-                words=s.strip().split()  
+                words=s.strip().split()
                 for word in words:
                     id=word2id.get(word)
                     if id is not None:
@@ -1376,7 +1411,7 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
                 length_D_s.append(length)
                 left_D_s.append(left)
                 right_D_s.append(right)
-            
+
             right_D=max_doc_length-left_D-doc_len
             for i in range(right_D):#pad empty sentences
                 sent=[0]*maxlength
@@ -1384,12 +1419,12 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
                 data_D_s.append(sent)
                 length_D_s.append(0)
                 left_D_s.append(maxlength/2)
-                right_D_s.append(maxlength-maxlength/2)            
+                right_D_s.append(maxlength-maxlength/2)
 
             data_D.append(data_D_s) # add one slice
             Length_D.append(doc_len)
             leftPad_D.append(left_D)
-            rightPad_D.append(right_D)                        
+            rightPad_D.append(right_D)
             #store above four depository
             Length_D_s.append(length_D_s)
             leftPad_D_s.append(left_D_s)
@@ -1398,7 +1433,7 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
 #             words=tokens[-5].strip().split()
 #             len_q=len(words)
 #             left=(maxlength-len_q)/2
-#             right=maxlength-left-len_q          
+#             right=maxlength-left-len_q
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
@@ -1408,74 +1443,74 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
 #             data_Q.append(sent)
 #             Length_Q.append(len_q)
 #             leftPad_Q.append(left)
-#             rightPad_Q.append(right)             
+#             rightPad_Q.append(right)
             #A1
             words=tokens[-3].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A1.append(sent)            
+            data_A1.append(sent)
             Length_A1.append(len_a)
             leftPad_A1.append(left)
-            rightPad_A1.append(right)         
+            rightPad_A1.append(right)
             #A2
             words=tokens[-2].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A2.append(sent)            
+            data_A2.append(sent)
             Length_A2.append(len_a)
             leftPad_A2.append(left)
-            rightPad_A2.append(right)   
+            rightPad_A2.append(right)
             #A3
             words=tokens[-1].strip().split()
             len_a=len(words)
             left=(maxlength-len_a)/2
-            right=maxlength-left-len_a           
+            right=maxlength-left-len_a
             sent=[]
             for word in words:
                 id=word2id.get(word)
                 if id is not None:
                     sent.append(id)
             sent=[0]*left+sent+[0]*right
-            data_A3.append(sent)            
+            data_A3.append(sent)
             Length_A3.append(len_a)
             leftPad_A3.append(left)
-            rightPad_A3.append(right)   
+            rightPad_A3.append(right)
 #             #A1
 #             words=tokens[-1].strip().split()
 #             len_a=len(words)
 #             left=(maxlength-len_a)/2
-#             right=maxlength-left-len_a           
+#             right=maxlength-left-len_a
 #             sent=[]
 #             for word in words:
 #                 id=word2id.get(word)
 #                 if id is not None:
 #                     sent.append(id)
 #             sent=[0]*left+sent+[0]*right
-#             data_A4.append(sent)            
+#             data_A4.append(sent)
 #             Length_A4.append(len_a)
 #             leftPad_A4.append(left)
-#             rightPad_A4.append(right)       
+#             rightPad_A4.append(right)
             line_control+=1
             #if line_control==50:
             #    break
         read_file.close()
- 
-        
-        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(Label), 
+
+
+        results=[numpy.array(data_D), numpy.array(data_A1), numpy.array(data_A2), numpy.array(data_A3), numpy.array(Label),
                  numpy.array(Length_D),numpy.array(Length_D_s), numpy.array(Length_A1), numpy.array(Length_A2), numpy.array(Length_A3),
                 numpy.array(leftPad_D),numpy.array(leftPad_D_s), numpy.array(leftPad_A1), numpy.array(leftPad_A2), numpy.array(leftPad_A3),
                 numpy.array(rightPad_D),numpy.array(rightPad_D_s), numpy.array(rightPad_A1), numpy.array(rightPad_A2), numpy.array(rightPad_A3)]
@@ -1490,16 +1525,16 @@ def load_MCTest_corpus_DPNQ(vocabFile, trainFile, testFile, max_truncate,maxleng
     print 'test file loaded over, test_size:', test_size
 
 
-    
+
     def shared_dataset(data_y, borrow=True):
         shared_y = theano.shared(numpy.asarray(data_y,
                                                dtype=theano.config.floatX),  # @UndefinedVariable
                                  borrow=borrow)
-        return T.cast(shared_y, 'int64')  
+        return T.cast(shared_y, 'int64')
         #return shared_y
-    
+
     train_list=[shared_dataset(matt) for matt in train_data]
 
-    test_list=[shared_dataset(matt) for matt in test_data]       
+    test_list=[shared_dataset(matt) for matt in test_data]
 
     return train_list, train_size, test_list, test_size, word_ind-1

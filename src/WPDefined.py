@@ -12,6 +12,10 @@ import theano.tensor as T
 from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
 
+# git clone https://github.com/yinwenpeng/Thang.git
+sys.path.insert(0, '/Users/benjaminhess/dl/yinwenpeng/Thang')
+# Thanks, http://stackoverflow.com/questions/279237/import-a-module-from-a-relative-path
+                        
 from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
 from cis.deep.utils.theano import debug_print
@@ -20,9 +24,9 @@ def load_model_for_training(wikiFile, trainFile, devFile, maxlength, dataMode, t
 
     def store_word2id_into_file(word2id):
         if train_scheme ==1:
-            output = open('/mounts/data/proj/wenpeng/CNN_LM/word2id_onlytrain.txt', 'w')
+            output = open('../data/word2id_onlytrain.txt', 'w')
         elif train_scheme ==2:
-            output = open('/mounts/data/proj/wenpeng/CNN_LM/word2id_onlywiki.txt', 'w')
+            output = open('../data/word2id_onlywiki.txt', 'w')
         for word in word2id:
             output.write(word+"\t"+str(word2id[word])+"\n")
         print 'word2id stored over.'

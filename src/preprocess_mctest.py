@@ -4,7 +4,7 @@ import collections
 import numpy
 
 
-path='/mounts/data/proj/wenpeng/Dataset/MCTest/'
+path='../data/MCTest/'
 
 def tokenize(str):
     listt=TreebankWordTokenizer().tokenize(str)
@@ -42,11 +42,11 @@ def text2sents(text):
 #                 if word[posi+1:posi+2].isupper() or (posi==len(word)-1 and word[0:1].islower()):
 #                     word.replace('.','\t')
 #             refined_sent.append(word)
-#         tokenized_sent=' '.join(refined_sent)                
-                
+#         tokenized_sent=' '.join(refined_sent)
+
         new_text+='\t'+tokenized_sent
     return new_text.strip()
-    
+
 def answer2sents(text):
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     text=text.replace('\\newline',' ').replace('\\tab',' ')
@@ -74,13 +74,14 @@ def answer2sents(text):
 #                 if word[posi+1:posi+2].isupper() or (posi==len(word)-1 and word[0:1].islower()):
 #                     word.replace('.','\t')
 #             refined_sent.append(word)
-#         tokenized_sent=' '.join(refined_sent)                
-                
+#         tokenized_sent=' '.join(refined_sent)
+
         new_text+=' '+tokenized_sent
     words=new_text.strip().split()
     if words[-1]=='.' or words[-1]=='?':
-        words=words[:-1]    
+        words=words[:-1]
     return ' '.join(words)
+
 def standardlize(answerfile,inputfile):
     readfile=open(path+answerfile, 'r')
     answers=[]
@@ -128,12 +129,12 @@ def standardlize(answerfile,inputfile):
     writefile.close()
     readfile.close()
     print 'reform over'
-                
+
 def length_sent_text():
     #max_sent_length 57 max_text_length 59
-#     files=['mc500.train.tsv_standardlized.txt', 'mc500.dev.tsv_standardlized.txt','mc500.test.tsv_standardlized.txt','mc160.train.tsv_standardlized.txt', 'mc160.dev.tsv_standardlized.txt','mc160.test.tsv_standardlized.txt']                
+#     files=['mc500.train.tsv_standardlized.txt', 'mc500.dev.tsv_standardlized.txt','mc500.test.tsv_standardlized.txt','mc160.train.tsv_standardlized.txt', 'mc160.dev.tsv_standardlized.txt','mc160.test.tsv_standardlized.txt']
     #max_sent_length 57 max_text_length 59
-#    files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt']                
+#    files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt']
     files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt',
            'mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt']
     max_sent_length=0
@@ -155,8 +156,8 @@ def length_sent_text():
     print 'max_sent_length',max_sent_length, 'max_text_length', max_text_length
 #     print sent_l2count
 def Extract_Vocab():
-#    files=['mc500.train.tsv_standardlized.txt', 'mc500.dev.tsv_standardlized.txt','mc500.test.tsv_standardlized.txt','mc160.train.tsv_standardlized.txt', 'mc160.dev.tsv_standardlized.txt','mc160.test.tsv_standardlized.txt'] 
-#    files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt']                
+#    files=['mc500.train.tsv_standardlized.txt', 'mc500.dev.tsv_standardlized.txt','mc500.test.tsv_standardlized.txt','mc160.train.tsv_standardlized.txt', 'mc160.dev.tsv_standardlized.txt','mc160.test.tsv_standardlized.txt']
+#    files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt','mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt']
 #     files=['mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt',
 #            'mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt', 'mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_clean.txt']
 
@@ -179,7 +180,7 @@ def Extract_Vocab():
                         count+=1
                         vocab[word]=count
                         writeFile.write(str(count)+'\t'+word+'\n')
-                        
+
         readFile.close()
     writeFile.close()
     print 'total words: ', count
@@ -211,7 +212,7 @@ def transcate_word2vec():
         writeFile.write(tokens[1]+'\t'+' '.join(map(str, emb))+'\n')
     writeFile.close()
     readFile.close()
-    print 'word2vec trancate over, unk:', unk     
+    print 'word2vec trancate over, unk:', unk
 
 def transcate_glove():
     readFile=open('/mounts/data/proj/wenpeng/Dataset/glove.6B.50d.txt', 'r')
@@ -240,12 +241,12 @@ def transcate_glove():
         writeFile.write(tokens[1]+'\t'+' '.join(map(str, emb))+'\n')
     writeFile.close()
     readFile.close()
-    print 'glove trancate over, unk:', unk        
+    print 'glove trancate over, unk:', unk
 
 def change_DQA_into_DQAAAA():
     files=['mc500.train.tsv_standardlized.txt', 'mc500.dev.tsv_standardlized.txt', 'mc500.test.tsv_standardlized.txt',
            'mc160.train.tsv_standardlized.txt', 'mc160.dev.tsv_standardlized.txt', 'mc160.test.tsv_standardlized.txt']
-    
+
     for filee in files:
         readfile=open(path+filee, 'r')
         writefile=open(path+filee+'_DQAAAA.txt', 'w')
@@ -279,11 +280,8 @@ def change_DQA_into_DQAAAA():
     print 'over'
 
 
-def change_DQAS_into_DSSSS():
-    files=['mc500.train.tsv_standardlized.txt_with_state.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt', 'mc500.test.tsv_standardlized.txt_with_state.txt',
-           'mc160.train.tsv_standardlized.txt_with_state.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt', 'mc160.test.tsv_standardlized.txt_with_state.txt']
-    
-    for filee in files:
+def change_DQAS_into_DSSSS(filee):
+#    for filee in files:
         readfile=open(path+filee, 'r')
         writefile=open(path+filee+'_DSSSS.txt', 'w')
         line_no=1
@@ -313,7 +311,7 @@ def change_DQAS_into_DSSSS():
             line_no+=1
         writefile.close()
         readfile.close()
-    print 'over'      
+    print 'over'
 
 def combine_standardlize_statement(standfile, statefile):
     readstand=open(path+standfile, 'r')
@@ -322,7 +320,7 @@ def combine_standardlize_statement(standfile, statefile):
     for line in readstand:
         lines_stand.append(line.strip())
     readstand.close()
-    
+
 
     states=[]
     for line in readstate:
@@ -331,7 +329,7 @@ def combine_standardlize_statement(standfile, statefile):
         states_part=qa_part[1:1+4]+qa_part[6:6+4]+qa_part[11:11+4]+qa_part[16:16+4]
         states+=states_part
     readstate.close()
-    writefile=open(path+standfile+'_with_state.txt', 'w')    
+    writefile=open(path+standfile+'_with_state.txt', 'w')
     if len(lines_stand)!=len(states):
         print 'size not equal'
         exit(0)
@@ -340,7 +338,7 @@ def combine_standardlize_statement(standfile, statefile):
             writefile.write(lines_stand[i]+'\t'+answer2sents(states[i])+'\n')
     writefile.close()
     print 'finished'
-                    
+
 def change_DSSSS_to_DPN(inputfile):
     readfile=open(path+inputfile, 'r')
     writefile=open(path+inputfile+'_DPN.txt', 'w')
@@ -353,7 +351,7 @@ def change_DSSSS_to_DPN(inputfile):
     writefile.close()
     readfile.close()
     print 'over'
-                  
+
 def change_DPN_to_DPNQ(dpnfile, qfile):
     readfile=open(path+qfile, 'r')
     Q=[]
@@ -376,7 +374,7 @@ def change_DPN_to_DPNQ(dpnfile, qfile):
     writefile.close()
     readfile.close
     print 'over'
-        
+
 def remove_noise_sents_DPN(infile):
     stopfile=open(path+'stopwords.txt', 'r')
     stops=set()
@@ -414,9 +412,9 @@ def change_DPNQ_into_DPNQQClass():
            'mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_DPNQ.txt',
            'mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_DPNQ.txt',
            'mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt_DPNQ.txt']
-    
+
     class2index={'how':0,'how much':1, 'how many':2, 'what':3,'who':4,'where':5,'which':6,'when':7,'whose':8,'why':9,'will':10} # totally 12 classes, including "other"
-    
+
 
     for file in files:
         readfile=open(path+file, 'r')
@@ -439,47 +437,35 @@ def change_DPNQ_into_DPNQQClass():
         readfile.close()
         writefile.close()
         print 'over'
-        
 
-if __name__ == '__main__':
-#     standardlize('mc500.train.ans', 'mc500.train.tsv')
-#     standardlize('mc500.dev.ans', 'mc500.dev.tsv')
-#     standardlize('mc500.test.ans', 'mc500.test.tsv')
-#     standardlize('mc160.train.ans', 'mc160.train.tsv')
-#     standardlize('mc160.dev.ans', 'mc160.dev.tsv')
-#     standardlize('mc160.test.ans', 'mc160.test.tsv')
-#     length_sent_text()
-#     Extract_Vocab()
-#     transcate_word2vec()
-#     transcate_glove()
-#     change_DQA_into_DQAAAA()
 
-#     combine_standardlize_statement('mc500.train.tsv_standardlized.txt', 'Statements/mc500.train.statements.tsv')
-#     combine_standardlize_statement('mc500.dev.tsv_standardlized.txt', 'Statements/mc500.dev.statements.tsv')
-#     combine_standardlize_statement('mc500.test.tsv_standardlized.txt', 'Statements/mc500.test.statements.tsv')    
-#     combine_standardlize_statement('mc160.train.tsv_standardlized.txt', 'Statements/mc160.train.statements.tsv')
-#     combine_standardlize_statement('mc160.dev.tsv_standardlized.txt', 'Statements/mc160.dev.statements.tsv')
-#     combine_standardlize_statement('mc160.test.tsv_standardlized.txt', 'Statements/mc160.test.statements.tsv')
-#     change_DQAS_into_DSSSS()
-#     change_DSSSS_to_DPN('mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DSSSS_to_DPN('mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DSSSS_to_DPN('mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DSSSS_to_DPN('mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DSSSS_to_DPN('mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DSSSS_to_DPN('mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt')
-#     change_DPN_to_DPNQ('mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc500.train.tsv_standardlized.txt_with_state.txt')
-#     change_DPN_to_DPNQ('mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc500.dev.tsv_standardlized.txt_with_state.txt')
-#     change_DPN_to_DPNQ('mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc500.test.tsv_standardlized.txt_with_state.txt')
-#     change_DPN_to_DPNQ('mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc160.train.tsv_standardlized.txt_with_state.txt')
-#     change_DPN_to_DPNQ('mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc160.dev.tsv_standardlized.txt_with_state.txt')
-#     change_DPN_to_DPNQ('mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt', 'mc160.test.tsv_standardlized.txt_with_state.txt')
+def main():
+    countLabels = ['mc160', 'mc500']
+    stepLabels = ['train', 'dev', 'test']
 
-#     remove_noise_sents_DPN('mc500.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
-#     remove_noise_sents_DPN('mc500.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
-#     remove_noise_sents_DPN('mc500.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
-#     remove_noise_sents_DPN('mc160.train.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
-#     remove_noise_sents_DPN('mc160.dev.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
-#     remove_noise_sents_DPN('mc160.test.tsv_standardlized.txt_with_state.txt_DSSSS.txt_DPN.txt')
+    for countLabel in countLabels:
+        for stepLabel in stepLabels:
+            fname0 = path+'.'.join([countLabel, stepLabel, 'ans'])
+            fname1 = fname0[:-3]+'tsv'
+            standardlize(fname0, fname1) # prints 'reform over'
+            fname2 = fname1+'_standardlized.txt'
+            fname3 = path+''.join(['Statements/', cl, '.', sl, '.statements.tsv'])
+            combine_standardlize_statement(fname2, fname3)
+            fname4 = fname2+'_with_state.txt'
+            change_DQAS_into_DSSSS(fname4) # appends '_DSSSS.txt'
+            fname5 = fname4+'_DSSSS.txt'
+            change_DSSSS_to_DPN(fname5)
+            fname6 = fname5+'_DPN.txt'
+            change_DPN_to_DPNQ(fname6, fname4)
+            remove_noise_sents_DPN(fname6)
+
+    length_sent_text()
+    Extract_Vocab()
+    transcate_word2vec()
+    transcate_glove()
+    change_DQA_into_DQAAAA()
 
     change_DPNQ_into_DPNQQClass()
-        
+
+if __name__ == '__main__':
+    main()

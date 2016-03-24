@@ -45,7 +45,8 @@ import numpy
 import random
 import theano
 import theano.tensor as T
-from cis.deep.utils.theano import debug_print
+sys.path.insert(0, 'Thang')
+from Thang import debug_print
 
 
 
@@ -86,15 +87,15 @@ class LogisticRegression(object):
                     low=-numpy.sqrt(6. / (n_in + n_out)),
                     high=numpy.sqrt(6. / (n_in + n_out)),
                     size=(n_in, n_out)), dtype=theano.config.floatX), borrow=True)
-        
+
         # initialize the baises b as a vector of n_out 0s
         self.b = theano.shared(value=numpy.zeros((n_out,),
                                                  dtype=theano.config.floatX),  # @UndefinedVariable
                                name='b', borrow=True)
         before_softmax=T.dot(input, self.W) + self.b
-        # compute vector of class-membership probabilities in symbolic form, 
+        # compute vector of class-membership probabilities in symbolic form,
         self.p_y_given_x =T.nnet.softmax(before_softmax) # is a vector
-        
+
         self.prop_for_posi=self.p_y_given_x[:,1:2]
         # compute prediction as class whose probability is maximal in
         # symbolic form
@@ -129,7 +130,7 @@ class LogisticRegression(object):
         # v containing [LP[0,y[0]], LP[1,y[1]], LP[2,y[2]], ...,
         # LP[n-1,y[n-1]]] and T.mean(LP[T.arange(y.shape[0]),y]) is
         # the mean (across minibatch examples) of the elements in v,
-        # i.e., the mean log-likelihood across the minibatch.  
+        # i.e., the mean log-likelihood across the minibatch.
         y=debug_print(y,'y_true')
         log_likelihood=-T.mean(T.log(self.p_y_given_x)[T.arange(y.shape[0]), y])
         return log_likelihood
@@ -137,7 +138,7 @@ class LogisticRegression(object):
 
     #wenpeng define cross-entropy for logistic_sgd
     def cross_entropy_regularization(self, y, params):
-        
+
         cost =-T.mean(T.log(self.p_y_given_x)[T.arange(y.shape[0]), y])
         '''
         for params_i in params:
@@ -188,7 +189,7 @@ def read_data(trainFile, devFile, testFile, emb_file, maxlength):
     embeddingsFile.close()
     print 'Totally, '+str(len(embeddings))+' word embeddings.'
 
-    def load_file(file):   
+    def load_file(file):
         senti_file=open(file, 'r')
         X=[]
         Y=[]
@@ -203,17 +204,17 @@ def read_data(trainFile, devFile, testFile, emb_file, maxlength):
                 print 'Too long sentence:\n'+line
                 exit(0)
             for i in range(left*embedding_size):
-                sent.append(0)     
+                sent.append(0)
             for word in words:
                 wordEmbedding=embeddings.get(word, -1)   # possibly the embeddings are for words with lowercase
                 if wordEmbedding == -1:
                     wordEmbedding=embeddings.get(word.lower(), -1)
                 if wordEmbedding == -1:
-                    sent=sent+[random.uniform(-1, 1) for r in xrange(embedding_size)] # produce a list of random numbers for unknown words 
+                    sent=sent+[random.uniform(-1, 1) for r in xrange(embedding_size)] # produce a list of random numbers for unknown words
                 else:
                     sent=sent+wordEmbedding
             for i in range(right):
-                sent=sent+[0]*embedding_size     
+                sent=sent+[0]*embedding_size
             X.append(sent)
         return numpy.array(X),numpy.array(Y)
     trainX, trainY=load_file(trainFile)

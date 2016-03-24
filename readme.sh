@@ -21,9 +21,12 @@ rm MCTestAnswers.zip
 wget http://research.microsoft.com/en-us/um/redmond/projects/mctest/data/Statements.zip
 unzip Statements.zip
 rm Statements.zip
+wget http://research.microsoft.com/en-us/um/redmond/projects/mctest/data/stopwords.txt
 
 # Prepare the data.
+
 python preprocess_mctest.py
 
 # Train the model.
-python train_arc1.py
+#python train_arc1.py
+python train_entailment_v3.py

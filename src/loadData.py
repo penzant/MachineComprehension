@@ -1375,7 +1375,7 @@ def load_MCTest_corpus_DPNQ(
         line_control=0
         with open(infile, 'r') as read_file:
             for line in read_file:
-                tokens=line.strip().split('\t')  # question, answer, label
+                tokens=line.strip().lower().split('\t')  # question, answer, label
 #                 Y.append(int(tokens[0]))
                 Label.append(int(tokens[0])) #1 or 2 means single or multiple
 
